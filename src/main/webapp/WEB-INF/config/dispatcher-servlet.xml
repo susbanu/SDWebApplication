@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	
+	<!-- Registered 'CommonsMultipartResolver' to tell Spring to use commons-upload library to handle the file upload form -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+		
+	<!-- Configure Tiles -->
+	<bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">  
+  		<property name="viewClass">  
+   			<value>org.springframework.web.servlet.view.tiles3.TilesView</value>  
+  		</property>
+ 	</bean>
+  	
+  	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+  		<property name="definitions">  
+   			<list>  
+    			<value>/WEB-INF/tiles/tilesJsp.xml</value>
+   			</list>
+  		</property>
+ 	</bean>
+ 	
+
+ 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+ 		<property name="order" value="1" />
+        <property name="contentNegotiationManager" ref="contentNegotiationManager"/>
+       
+        <property name="defaultViews">
+        	<list>
+        		<!-- MappingJacksonJsonView automatically converts all attributes found in the Model to JSON  -->
+        		<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+        		
+        		<!-- MarshallingView automatically converts all attributes found in the Model to XML -->
+        		<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<constructor-arg>
+						<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+							<property name="packagesToScan">
+								<list>
+									<value>com.sus.model</value>
+								</list>
+							</property>
+						</bean>
+					</constructor-arg>
+				</bean>
+        	</list>
+        </property>
+        
+        <!-- Define the view resolvers explicitly -->
+        <property name="viewResolvers" ref="tilesViewResolver" />
+    </bean>
+    
+	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+	    <property name="favorPathExtension" value="true" />
+	    <property name="ignoreAcceptHeader" value="true"/>
+	    <property name="defaultContentType" value="text/html" />
+	    <property name="useJaf" value="false"/>
+	 
+	    <property name="mediaTypes">
+	        <map>
+	        	<entry key="htm" value="text/html" />
+	            <entry key="json" value="application/json" />
+	            <entry key="xml" value="application/xml" />
+	       </map>
+	    </property>
+	</bean>
+ 
+<!--  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="order" value="1" />
+		<property name="contentNegotiationManager">
+			<bean class="org.springframework.web.accept.ContentNegotiationManager">
+				<constructor-arg>
+					<bean class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
+						<constructor-arg>
+							<map>
+								<entry key="json">
+									<util:constant static-field="org.springframework.http.MediaType.APPLICATION_JSON"/>
+								</entry>
+								<entry key="xml">
+									<util:constant static-field="org.springframework.http.MediaType.APPLICATION_XML"/>
+								</entry>
+							</map>
+						</constructor-arg>
+					</bean>					
+				</constructor-arg>
+			</bean>			
+		</property>
+		
+		<property name="defaultViews">
+			<list>
+				<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+				
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<constructor-arg>
+						<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+							<property name="packagesToScan">
+								<list>
+									<value>com.sus.model</value>
+								</list>
+							</property>
+						</bean>
+					</constructor-arg>
+				</bean>
+												
+			</list>
+		</property>
+		
+		<property name="viewResolvers" ref="tilesViewResolver">
+		</property>
+	</bean> -->
+</beans>

@@ -1,0 +1,78 @@
+package sus.com.controller.rest;
+
+<<<<<<< HEAD
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import sus.com.model.User;
+=======
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import sus.com.model.UserModel;
+>>>>>>> 0a47d056eb6c399992b240b13754b146bfd651ed
+
+@org.springframework.web.bind.annotation.RestController
+public class RestController {
+
+	
+	@RequestMapping(value = "/getMessage.json", method = RequestMethod.GET)
+	public String getMessage() {
+		return "Tarkik Shah";
+	}
+	
+<<<<<<< HEAD
+	@RequestMapping(value = "/getObj.json", method = RequestMethod.GET)
+	public User getObj() {
+		return new User("tarkik","tarkik") ;
+=======
+	/*@RequestMapping(value = "/getObj.json", method = RequestMethod.GET)
+	public UserModel getObj() {
+		return new UserModel("tarkik","tarkik") ;
+>>>>>>> 0a47d056eb6c399992b240b13754b146bfd651ed
+		
+	}
+	
+	@RequestMapping(value = "/getList.json", method = RequestMethod.GET)
+<<<<<<< HEAD
+	public List<User> listUsers() {
+		List<User> listUsers = new ArrayList<User>();
+		listUsers.add(new User("tarkik","tarkik"));
+		listUsers.add(new User("sushant","sushant"));
+		return listUsers;
+	}
+	
+	@RequestMapping(value = "/storeObj.json", method = RequestMethod.POST)
+	public User storeObj(@RequestParam String userName, @RequestParam String firstName) {
+		
+		/*User myUser = user ;*/
+		System.out.println(firstName);
+		System.out.println(userName);
+//		myUser.setFirstName("test from java");
+		return new User(userName,firstName);
+=======
+	public List<UserModel> listUsers() {
+		List<UserModel> listUsers = new ArrayList<UserModel>();
+		listUsers.add(new UserModel("tarkik","tarkik"));
+		listUsers.add(new UserModel("sushant","sushant"));
+		return listUsers;
+	}*/
+	
+	@RequestMapping(value = "/storeObj.json", method = RequestMethod.POST, produces={"application/json", "application/xml"})
+	public @ResponseBody UserModel storeObj(@RequestBody UserModel user) {
+		 
+		/*User myUser = user ;*/
+		System.out.println(user.getUserId());
+		System.out.println(user.getUserName());
+//		myUser.setFirstName("test from java");
+		return user;
+>>>>>>> 0a47d056eb6c399992b240b13754b146bfd651ed
+	}
+	
+}

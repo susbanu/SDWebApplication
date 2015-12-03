@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+		                    
+  <!-- Provides method security for all beans registered in the Spring application context. -->	
+  <global-method-security secured-annotations="enabled" />
+  
+  <!--  Container element for HTTP security configuration. Multiple elements can now be defined, each with a specific pattern to 
+        which the enclosed security configuration applies. A pattern can also be configured to bypass Spring Security's filters completely 
+        by setting the "security" attribute to "none".  -->
+  <http pattern="/resources" security="none"/>
+  
+  <http use-expressions="true" >
+	<intercept-url pattern="/user/**" access="hasRole('ROLE_USER')" />
+	<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+	<!-- access denied page 
+		Defines the access-denied strategy that should be used. An access 
+		denied page can be defined or a reference to an 
+		AccessDeniedHandler instance.
+	-->
+	<access-denied-handler error-page="/403.htm" />
+	
+	<form-login
+		    login-page="/login.htm" 
+		    default-target-url="/welcome.htm" 
+			authentication-failure-url="/login.htm?error" />
+	<logout logout-success-url="/login.htm?logout" delete-cookies="JSESSIONID" invalidate-session="true" />
+	
+	<!-- Element for configuration of the CsrfFilter for protection against CSRF -->
+	<csrf/>
+	
+	
+	<session-management invalid-session-url="/login.htm" >
+         <concurrency-control max-sessions="1" expired-url="/login.htm" />
+    </session-management>
+    
+    <remember-me key="rememberMe" token-validity-seconds="84600" user-service-ref="myUserDetailsService" />
+    
+  </http>
+
+	<!-- Changes on 02-12-2015
+	
+	<http use-expressions="true" entry-point-ref="restAuthenticationEntryPoint">
+        <intercept-url pattern="/api/**" />
+        <form-login authentication-success-handler-ref="mySuccessHandler" authentication-failure-handler-ref="myFailureHandler" />
+ 
+        <logout />
+    </http> 
+    
+    Connect the custom authentication success handler
+    <beans:bean id="mySuccessHandler" class="sus.com.handler.endpoint.RestAuthenticationSuccessHandler" />
+    Using default failure handler
+    <beans:bean id="myFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" />
+    -->
+        
+	<!-- Registers the AuthenticationManager instance and allows its list 
+		 of AuthenticationProviders to be defined. Also allows you to 
+		 define an alias to allow you to reference the 
+		 AuthenticationManager in your own beans. -->
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider  user-service-ref="myUserDetailsService">
+		</authentication-provider>
+	</authentication-manager>
+  
+</beans:beans>
